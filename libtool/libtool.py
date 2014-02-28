@@ -19,7 +19,7 @@ def include_sub_folder(file_path, root_folder_name, folder_name):
     include_in_folder(root_folder_path, folder_name)
 
 
-def find_root_path(package_info):
+def find_root_path_from_pkg(package_info):
     return find_root_path(package_info.file_path, package_info.package_root_name)
 
 
