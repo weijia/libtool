@@ -7,7 +7,11 @@ import os
 def find_root_path(file_path, root_folder_name):
     while file_path.find(root_folder_name) != -1:
         file_path = os.path.dirname(file_path)
-    return os.path.join(file_path, root_folder_name)
+    return os.path.abspath(os.path.join(file_path, root_folder_name))
+
+
+def include_root_path(file_path, root_folder_name):
+    include(find_root_path(file_path, root_folder_name))
 
 
 def include_sub_folder(file_path, root_folder_name, folder_name):
