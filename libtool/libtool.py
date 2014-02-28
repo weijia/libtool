@@ -5,7 +5,9 @@ import os
 
 
 def find_root_path(file_path, root_folder_name):
-    while file_path.find(root_folder_name) != -1:
+    folder_name = None
+    while folder_name != root_folder_name:
+        folder_name = os.path.basename(file_path)
         file_path = os.path.dirname(file_path)
     return os.path.abspath(os.path.join(file_path, root_folder_name))
 
