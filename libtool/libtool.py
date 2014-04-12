@@ -78,4 +78,4 @@ def get_parent_folder_for_file(file_path):
 
 
 def get_parent_folder_for_folder(folder_path):
-    return os.path.abspath(os.path.join(file_path,".."))
+    return os.path.abspath(os.path.join(folder_path,".."))
