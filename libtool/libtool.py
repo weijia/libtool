@@ -72,7 +72,11 @@ def exclude(folder):
         sys.path.remove(folder)
 
 
-def get_parent_folder_for_file(file_path):
+def get_grand_parent(folder_path):
+    return get_parent_folder_for_folder(get_parent_folder_for_folder(folder_path))
+
+
+def get_parent_of_folder_containing_file(file_path):
     #print "parent:"+os.path.abspath(os.path.join(os.path.dirname(file_path),".."))
     return os.path.abspath(os.path.join(os.path.dirname(file_path),".."))
 
