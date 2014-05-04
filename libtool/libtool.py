@@ -62,6 +62,12 @@ def include(folder):
         sys.path.insert(0, folder)
 
 
+def append(folder):
+    folder = os.path.abspath(folder)
+    if not (folder in sys.path):
+        sys.path.append(folder)
+
+
 def include_in_folder(folder, sub_folder_name):
     include(os.path.join(folder, sub_folder_name))
 
@@ -83,3 +89,10 @@ def get_parent_of_folder_containing_file(file_path):
 
 def get_parent_folder_for_folder(folder_path):
     return os.path.abspath(os.path.join(folder_path,".."))
+
+
+def include_all_direct_subfolders(folder_path):
+    for i in os.listdir(folder_path):
+        full_path = os.path.abspath(os.path.join(folder_path, i))
+        if os.path.isdir(full_path):
+            append(full_path)
