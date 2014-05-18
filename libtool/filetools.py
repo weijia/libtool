@@ -2,6 +2,7 @@ import os
 import time
 import random
 import re
+import logging
 
 #The following codes are copied from http://stackoverflow.com/questions/606561/how-to-get-filename-of-the-main-module-in-python
 import imp
@@ -98,19 +99,24 @@ def find_callable_in_app_framework(filename):
     return find_filename_in_app_framework_with_pattern('^' + filename + "((\.bat$)|(\.py$)|(\.exe$)|(\.com$))")
 
 
+log = logging.getLogger(__name__)
+
+
 def collect_files_in_dir(file_root_full_path, ext=None, ignore_file_list=[]):
     res = []
     if os.path.exists(file_root_full_path) and os.path.isdir(file_root_full_path):
+        #log.error(file_root_full_path)
         for filename in os.listdir(file_root_full_path):
+            #log.error(filename)
             if filename in ignore_file_list:
-                print "ignoring: ", filename
+                #print "ignoring: ", filename
                 continue
             if (ext is None) or (ext in filename):
                 #To ensure .pyc is not included
                 if len(filename.split(ext)[1]) != 0:
                     continue
                 full_path = os.path.join(file_root_full_path, filename)
-                print full_path
+                #print full_path
                 res.append(full_path)
     return res
 

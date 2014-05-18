@@ -2,6 +2,11 @@
 # -*- coding: utf-8 -*-
 import sys
 import os
+import inspect
+import logging
+
+
+log = logging.getLogger(__name__)
 
 
 def find_root_path(file_path, root_folder_name):
@@ -9,12 +14,15 @@ def find_root_path(file_path, root_folder_name):
     folder_name = None
     while folder_name != root_folder_name:
         folder_name = os.path.basename(file_path)
+        #log.error("find_root_path:"+folder_name)
         last_file_path = file_path
         file_path = os.path.dirname(file_path)
         if last_file_path == file_path:
             print last_file_path, file_path, folder_name, root_folder_name,
             raise "No root path found"
-    return os.path.abspath(os.path.join(file_path, root_folder_name))
+    found_path = os.path.join(file_path, root_folder_name)
+    #log.error("returning:"+found_path)
+    return os.path.abspath(found_path)
 
 
 def include_root_path(file_path, root_folder_name):
@@ -96,3 +104,40 @@ def include_all_direct_subfolders(folder_path):
         full_path = os.path.abspath(os.path.join(folder_path, i))
         if os.path.isdir(full_path):
             append(full_path)
+
+
+def get_current_path():
+    frame = inspect.getouterframes(inspect.currentframe())
+    caller_frame = frame[1]
+    dirpath = os.path.abspath(os.path.dirname(caller_frame[1]))
+    return dirpath
+
+
+def find_root(root_name):
+    frame = inspect.getouterframes(inspect.currentframe())
+    caller_frame = frame[1]
+    caller_file = caller_frame[1]
+    return find_root_path(caller_file, root_name)
+
+
+def include_sub_folder_in_root_path_ex( root_folder_name, folder_name):
+    frame = inspect.getouterframes(inspect.currentframe())
+    caller_frame = frame[1]
+    caller_file = caller_frame[1]
+    root_folder_path = find_root_path(caller_file, root_folder_name)
+    include_in_folder(root_folder_path, folder_name)
+
+
+def get_parent_frame():
+    frame = inspect.getouterframes(inspect.currentframe())
+    caller_frame = frame[2]
+    caller_file = caller_frame[1]
+    return caller_file
+
+
+def include_file_sibling_folder_ex(sub_folder_name):
+    caller_file = get_parent_frame()
+    if (caller_file[-1] == "/") or (caller_file[-1] == "\\"):
+        caller_file = caller_file[0:-1]
+    folder = get_file_folder(caller_file)
+    include_in_folder(folder, sub_folder_name)
