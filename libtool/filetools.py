@@ -22,6 +22,11 @@ def get_main_exec():
     return sys.argv[0]
 
 
+def get_main_exec_path():
+    dirpath = os.path.abspath(os.path.dirname(get_main_exec()))
+    return dirpath
+
+
 def get_main_file():
     #print "----------------------", get_main_exec()
     # find path to where we are running
