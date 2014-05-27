@@ -141,3 +141,11 @@ def include_file_sibling_folder_ex(sub_folder_name):
         caller_file = caller_file[0:-1]
     folder = get_file_folder(caller_file)
     include_in_folder(folder, sub_folder_name)
+    
+    
+def include_sibling_file(file_path, filename):
+    if (file_path[-1] == "/") or (file_path[-1] == "\\"):
+        file_path = file_path[0:-1]
+    folder = get_file_folder(file_path)
+    include(os.path.join(folder, filename))
+    
