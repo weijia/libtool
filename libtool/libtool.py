@@ -18,7 +18,8 @@ def find_root_path(file_path, root_folder_name):
         last_file_path = file_path
         file_path = os.path.dirname(file_path)
         if last_file_path == file_path:
-            print last_file_path, file_path, folder_name, root_folder_name,
+            print "find root path failed, last_file_path: %s, file_path: %s, folder_name: %s, root_folder_name: %s" % (last_file_path,
+                                file_path, folder_name, root_folder_name)
             raise "No root path found"
     found_path = os.path.join(file_path, root_folder_name)
     #log.error("returning:"+found_path)
@@ -116,7 +117,7 @@ def get_current_path():
 def find_root(root_name, caller_level=1):
     frame = inspect.getouterframes(inspect.currentframe())
     caller_frame = frame[caller_level]
-    caller_file = caller_frame[1]
+    caller_file = os.path.abspath(caller_frame[1])
     return find_root_path(caller_file, root_name)
 
 
@@ -150,3 +151,11 @@ def include_file_sibling_folder_ex(sub_folder_name):
         caller_file = caller_file[0:-1]
     folder = get_file_folder(caller_file)
     include_in_folder(folder, sub_folder_name)
+    
+    
+def include_sibling_file(file_path, filename):
+    if (file_path[-1] == "/") or (file_path[-1] == "\\"):
+        file_path = file_path[0:-1]
+    folder = get_file_folder(file_path)
+    include(os.path.join(folder, filename))
+    
