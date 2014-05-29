@@ -4,7 +4,7 @@ import sys
 import os
 import inspect
 import logging
-
+from filetools import main_is_frozen
 
 log = logging.getLogger(__name__)
 
@@ -113,11 +113,20 @@ def get_current_path():
     return dirpath
 
 
-def find_root(root_name):
+def find_root(root_name, caller_level=1):
     frame = inspect.getouterframes(inspect.currentframe())
-    caller_frame = frame[1]
+    caller_frame = frame[caller_level]
     caller_file = caller_frame[1]
     return find_root_path(caller_file, root_name)
+
+
+def find_root_even_frozen(root_name):
+    if main_is_frozen():
+        #log.error("frozen, "+find_root_path(sys.executable, root_name))
+        return find_root_path(sys.executable, root_name)
+    else:
+        #log.error(dir(sys))
+        return find_root(root_name, 2)
 
 
 def include_sub_folder_in_root_path_ex( root_folder_name, folder_name):

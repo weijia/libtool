@@ -62,7 +62,7 @@ def get_free_name_from_full_path(full_path):
     return res
 
 
-def get_free_timestamp_filename_in_path(path, ext, prefix=''):
+def get_free_timestamp_filename_in_path(path, dot_ext, prefix=''):
     """
     Return a unused filename according to current time.
     :param path:
@@ -72,7 +72,7 @@ def get_free_timestamp_filename_in_path(path, ext, prefix=''):
     """
     #print path, ext, prefix
     filename = unicode(prefix + str(time.time()))
-    return get_free_file_name(path, filename, ext)
+    return get_free_file_name(path, filename, dot_ext)
 
 
 def find_file_in_product(filename):
