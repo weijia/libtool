@@ -158,4 +158,16 @@ def include_sibling_file(file_path, filename):
         file_path = file_path[0:-1]
     folder = get_file_folder(file_path)
     include(os.path.join(folder, filename))
-    
+
+
+def add_path_to_python_path_env(full_path):
+    full_path = full_path.replace("\\", "/")
+    original = os.environ.get("PYTHONPATH", "")
+    separator = ";"  # Only for windows, TODO: need to add cross platform support
+    original_paths = original.split(separator)
+    for original_path in original_paths:
+        formatted_original = original_path.replace("\\", "/")
+        if full_path == formatted_original:
+            return
+    original_paths.append(full_path)
+    os.environ["PYTHONPATH"] = separator.join(original_paths)
