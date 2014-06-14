@@ -4,7 +4,7 @@ import sys
 import os
 import inspect
 import logging
-from filetools import main_is_frozen
+from filetools import main_is_frozen, get_sibling_folder
 
 log = logging.getLogger(__name__)
 
@@ -105,6 +105,10 @@ def include_all_direct_subfolders(folder_path):
         full_path = os.path.abspath(os.path.join(folder_path, i))
         if os.path.isdir(full_path):
             append(full_path)
+
+
+def include_all_direct_sub_folders_in_sibling(file_path, folder_name):
+    include_all_direct_subfolders(get_sibling_folder(file_path, folder_name))
 
 
 def get_current_path():
