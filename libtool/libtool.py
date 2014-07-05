@@ -111,6 +111,21 @@ def include_all_direct_sub_folders_in_sibling(file_path, folder_name):
     include_all_direct_subfolders(get_sibling_folder(file_path, folder_name))
 
 
+def is_package_root(full_path):
+    return os.path.isdir(full_path) or ".zip" in full_path
+
+
+def include_all_ext_packages(folder_path, lib_checker=is_package_root):
+    for i in os.listdir(folder_path):
+        full_path = os.path.abspath(os.path.join(folder_path, i))
+        if lib_checker(full_path):
+            append(full_path)
+
+
+def include_all(file_path, folder_name):
+    include_all_ext_packages(get_sibling_folder(file_path, folder_name))
+
+
 def get_current_path():
     frame = inspect.getouterframes(inspect.currentframe())
     caller_frame = frame[1]
