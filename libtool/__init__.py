@@ -6,4 +6,5 @@ __email__ = 'richardwangwang@gmail.com'
 __version__ = '0.1.0'
 
 from libtool import *
+from filetools import *
 from package_info import *
