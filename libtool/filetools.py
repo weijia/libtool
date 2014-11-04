@@ -7,12 +7,13 @@ import logging
 #The following codes are copied from http://stackoverflow.com/questions/606561/how-to-get-filename-of-the-main-module-in-python
 import imp
 import sys
+from folder_tool import find_root, find_root_path
 
 
 def main_is_frozen():
-    return (hasattr(sys, "frozen") or # new py2exe
-            hasattr(sys, "importers") # old py2exe
-            or imp.is_frozen("__main__")) # tools/freeze
+    return (hasattr(sys, "frozen") or  # new py2exe
+            hasattr(sys, "importers")  # old py2exe
+            or imp.is_frozen("__main__"))  # tools/freeze
 
 
 def get_main_exec():
@@ -143,3 +144,12 @@ def get_parent_folder(file_path):
 
 def get_sibling_folder(file_path, folder_name):
     return os.path.abspath(os.path.join(get_folder(file_path), folder_name))
+
+
+def find_root_even_frozen(root_name):
+    if main_is_frozen():
+        #log.error("frozen, "+find_root_path(sys.executable, root_name))
+        return find_root_path(sys.executable, root_name)
+    else:
+        #log.error(dir(sys))
+        return find_root(root_name, 2)

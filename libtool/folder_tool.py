@@ -1,0 +1,72 @@
+import inspect
+import os
+from inspect_utils import get_parent_frame_file
+
+__author__ = 'weijia'
+
+
+def find_root_path(file_path, root_folder_name):
+    in_file_path = file_path
+    folder_name = None
+    while folder_name != root_folder_name:
+        folder_name = os.path.basename(file_path)
+        #log.error("find_root_path:"+folder_name)
+        last_file_path = file_path
+        file_path = os.path.dirname(file_path)
+        if last_file_path == file_path:
+            print "find root path failed, last_file_path: %s, file_path: %s, folder_name: %s, root_folder_name: %s" % (last_file_path,
+                                file_path, folder_name, root_folder_name)
+            raise "No root path found"
+    found_path = os.path.join(file_path, root_folder_name)
+    #log.error("returning:"+found_path)
+    return os.path.abspath(found_path)
+
+
+def find_root(root_name, caller_level=1):
+    """
+    This will not work in frozen app, as the get_parent_frame is getting the absolute path of the file when frozen
+    """
+    frame = inspect.getouterframes(inspect.currentframe())
+    caller_frame = frame[caller_level]
+    caller_file = os.path.abspath(caller_frame[1])
+    return find_root_path(caller_file, root_name)
+
+
+def get_file_folder(file_path):
+    folder = os.path.abspath(os.path.dirname(file_path))
+    return folder
+
+
+def get_absolute_path_for_relative_path(relative_path):
+    """
+    This will not work in frozen app, as the get_parent_frame is getting the absolute path of the file when frozen
+    """
+    caller_file = get_parent_frame_file()
+    if (caller_file[-1] == "/") or (caller_file[-1] == "\\"):
+        caller_file = caller_file[0:-1]
+    folder = get_file_folder(caller_file)
+    return os.path.abspath(os.path.join(folder, relative_path))
+
+
+def get_root_sub_folder(file_path, root_name, sub_folder):
+    root_path = find_root_path(file_path, root_name)
+    return os.path.abspath(os.path.join(root_path, sub_folder))
+
+
+def ensure_dir(full_path):
+    if not os.path.exists(full_path):
+        os.makedirs(full_path)
+
+
+def get_parent_folder_for_folder(folder_path):
+    return os.path.abspath(os.path.join(folder_path, ".."))
+
+
+def get_grand_parent(folder_path):
+    return get_parent_folder_for_folder(get_parent_folder_for_folder(folder_path))
+
+
+def find_root_path_from_pkg(package_info):
+    return find_root_path(package_info.file_path, package_info.package_root_name)
+
+

@@ -4,26 +4,14 @@ import sys
 import os
 import inspect
 import logging
-from filetools import main_is_frozen, get_sibling_folder
+
+from filetools import get_sibling_folder
+from inspect_utils import get_parent_frame_file
+from folder_tool import find_root_path, get_file_folder
+from basic_lib_tool import include, append, include_in_folder
+
 
 log = logging.getLogger(__name__)
-
-
-def find_root_path(file_path, root_folder_name):
-    in_file_path = file_path
-    folder_name = None
-    while folder_name != root_folder_name:
-        folder_name = os.path.basename(file_path)
-        #log.error("find_root_path:"+folder_name)
-        last_file_path = file_path
-        file_path = os.path.dirname(file_path)
-        if last_file_path == file_path:
-            print "find root path failed, last_file_path: %s, file_path: %s, folder_name: %s, root_folder_name: %s" % (last_file_path,
-                                file_path, folder_name, root_folder_name)
-            raise "No root path found"
-    found_path = os.path.join(file_path, root_folder_name)
-    #log.error("returning:"+found_path)
-    return os.path.abspath(found_path)
 
 
 def include_root_path(file_path, root_folder_name):
@@ -33,10 +21,6 @@ def include_root_path(file_path, root_folder_name):
 def include_sub_folder_in_root_path(file_path, root_folder_name, folder_name):
     root_folder_path = find_root_path(file_path, root_folder_name)
     include_in_folder(root_folder_path, folder_name)
-
-
-def find_root_path_from_pkg(package_info):
-    return find_root_path(package_info.file_path, package_info.package_root_name)
 
 
 def include_sub_folder(package_info, folder_name):
@@ -49,36 +33,11 @@ def include_folders(lib__full_path_list):
         include(i)
 
 
-def get_file_folder(file_path):
-    folder = os.path.abspath(os.path.dirname(file_path))
-    return folder
-
-
 def include_file_sibling_folder(file_path, sub_folder_name):
     if (file_path[-1] == "/") or (file_path[-1] == "\\"):
         file_path = file_path[0:-1]
     folder = get_file_folder(file_path)
     include_in_folder(folder, sub_folder_name)
-
-
-def include_file_folder(file_path):
-    include(os.path.dirname(file_path))
-
-
-def include(folder):
-    folder = os.path.abspath(folder)
-    if not (folder in sys.path):
-        sys.path.insert(0, folder)
-
-
-def append(folder):
-    folder = os.path.abspath(folder)
-    if not (folder in sys.path):
-        sys.path.append(folder)
-
-
-def include_in_folder(folder, sub_folder_name):
-    include(os.path.join(folder, sub_folder_name))
 
 
 def exclude(folder):
@@ -87,17 +46,9 @@ def exclude(folder):
         sys.path.remove(folder)
 
 
-def get_grand_parent(folder_path):
-    return get_parent_folder_for_folder(get_parent_folder_for_folder(folder_path))
-
-
 def get_parent_of_folder_containing_file(file_path):
     #print "parent:"+os.path.abspath(os.path.join(os.path.dirname(file_path),".."))
     return os.path.abspath(os.path.join(os.path.dirname(file_path),".."))
-
-
-def get_parent_folder_for_folder(folder_path):
-    return os.path.abspath(os.path.join(folder_path,".."))
 
 
 def include_all_direct_subfolders(folder_path):
@@ -129,27 +80,11 @@ def include_all(file_path, folder_name):
 def get_current_path():
     frame = inspect.getouterframes(inspect.currentframe())
     caller_frame = frame[1]
-    dirpath = os.path.abspath(os.path.dirname(caller_frame[1]))
-    return dirpath
+    dir_path = os.path.abspath(os.path.dirname(caller_frame[1]))
+    return dir_path
 
 
-def find_root(root_name, caller_level=1):
-    frame = inspect.getouterframes(inspect.currentframe())
-    caller_frame = frame[caller_level]
-    caller_file = os.path.abspath(caller_frame[1])
-    return find_root_path(caller_file, root_name)
-
-
-def find_root_even_frozen(root_name):
-    if main_is_frozen():
-        #log.error("frozen, "+find_root_path(sys.executable, root_name))
-        return find_root_path(sys.executable, root_name)
-    else:
-        #log.error(dir(sys))
-        return find_root(root_name, 2)
-
-
-def include_sub_folder_in_root_path_ex( root_folder_name, folder_name):
+def include_sub_folder_in_root_path_ex(root_folder_name, folder_name):
     frame = inspect.getouterframes(inspect.currentframe())
     caller_frame = frame[1]
     caller_file = caller_frame[1]
@@ -157,15 +92,8 @@ def include_sub_folder_in_root_path_ex( root_folder_name, folder_name):
     include_in_folder(root_folder_path, folder_name)
 
 
-def get_parent_frame():
-    frame = inspect.getouterframes(inspect.currentframe())
-    caller_frame = frame[2]
-    caller_file = caller_frame[1]
-    return caller_file
-
-
 def include_file_sibling_folder_ex(sub_folder_name):
-    caller_file = get_parent_frame()
+    caller_file = get_parent_frame_file()
     if (caller_file[-1] == "/") or (caller_file[-1] == "\\"):
         caller_file = caller_file[0:-1]
     folder = get_file_folder(caller_file)

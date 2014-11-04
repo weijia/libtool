@@ -9,8 +9,10 @@ Tests for `libtool` module.
 """
 
 import unittest
+import sys
+print sys.path
+from libtool.package_utils import include_all_ex
 
-from libtool import libtool
 
 
 class TestLibtool(unittest.TestCase):
@@ -19,7 +21,7 @@ class TestLibtool(unittest.TestCase):
         pass
 
     def test_something(self):
-        pass
+        include_all_ex("test")
 
     def tearDown(self):
         pass
