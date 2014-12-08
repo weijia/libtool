@@ -1,5 +1,6 @@
 import inspect
 import os
+import datetime
 from inspect_utils import get_parent_frame_file
 
 __author__ = 'weijia'
@@ -70,3 +71,11 @@ def find_root_path_from_pkg(package_info):
     return find_root_path(package_info.file_path, package_info.package_root_name)
 
 
+def get_year_month_dir(root_path):
+    now_value = datetime.datetime.now()
+    year = now_value.strftime('%Y')
+    month = now_value.strftime('%m')
+    data_dir = os.path.join(root_path, "%s%s%s" % (year, os.sep, month))
+
+    ensure_dir(data_dir)
+    return data_dir
