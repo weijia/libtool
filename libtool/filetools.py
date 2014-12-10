@@ -4,7 +4,7 @@ import random
 import re
 import logging
 
-#The following codes are copied from http://stackoverflow.com/questions/606561/how-to-get-filename-of-the-main-module-in-python
+# The following codes are copied from http://stackoverflow.com/questions/606561/how-to-get-filename-of-the-main-module-in-python
 import imp
 import sys
 from folder_tool import find_root, find_root_path
@@ -139,7 +139,7 @@ def get_folder(file_path):
 
 def get_parent_folder(file_path):
     #print "parent:"+os.path.abspath(os.path.join(os.path.dirname(file_path),".."))
-    return os.path.abspath(os.path.join(os.path.dirname(file_path),".."))
+    return os.path.abspath(os.path.join(os.path.dirname(file_path), ".."))
 
 
 def get_sibling_folder(file_path, folder_name):
@@ -153,3 +153,51 @@ def find_root_even_frozen(root_name):
     else:
         #log.error(dir(sys))
         return find_root(root_name, 2)
+
+
+g_local_string_encoding = 'gb2312'
+
+
+def translate_local_string_to_unicode(original_str):
+    """
+    Transform a string in local format to unicode. This may be changed in different
+    system as different system has different default encoding
+    """
+    if type(original_str) != unicode:
+        return original_str.decode(g_local_string_encoding)
+    return original_str
+
+
+def format_path(original_dir):
+    """
+    Transform dir to internal format.
+    In windows, it will be like: D:/helloworld.txt
+      The driver letter D should be capitalized. Separator should be '/' instead of '\\'
+
+    The input should be unicode. Anyway, we'll check it in this function.
+
+    """
+    if original_dir is None:
+        raise "tried to transform None to standard path"
+    #if isUfsUrl(original_dir):
+    #    raise "is ufs url, not path"
+    new_dir = translate_local_string_to_unicode(os.path.abspath(original_dir))
+    #print type(new_dir)
+    if sys.platform == 'win32':
+        #In windows, make the driver letter upper case
+        if new_dir[1] == u':':
+            new_dir = new_dir[0].upper() + new_dir[1:]
+        else:
+            logging.error('not a correct directory format in windows. Dir is:', new_dir)
+    new_dir = new_dir.replace(u'\\', u'/')
+    #ncl(new_dir)
+    #TODO: support linux path?
+    #Remove trail '/'
+    #print new_dir
+    new_dir = new_dir.rstrip(u'/')
+    if sys.platform == 'win32':
+        #In windows, make the driver letter upper case
+        if len(new_dir) == 2:
+            #C: or E:
+            new_dir += u"/"
+    return unicode(new_dir)
