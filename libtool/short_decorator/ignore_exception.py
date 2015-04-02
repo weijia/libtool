@@ -13,6 +13,7 @@ def ignore_exc_with_result(exception_result=None, exception=Exception):
             try:
                 return func()
             except exception, e:
+                print "ignored the following exception:________________________________________________"
                 traceback.print_exc()
                 return exception_result
         return wrap_with_exc
