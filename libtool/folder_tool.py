@@ -81,3 +81,8 @@ def get_year_month_dir(root_path, year=None, month=None):
 
     ensure_dir(data_dir)
     return data_dir
+
+
+def get_file_basename(file_path):
+    default_name = os.path.basename(file_path).replace(".py", "").replace(".exe", "")
+    return default_name
