@@ -19,3 +19,10 @@ class AppConfig(object):
             return full_path
         print full_path
         raise "Not exist"
+
+
+def find_app_in_folders(folder_list, app_name_ext):
+    for folder in folder_list:
+        if os.path.exists(os.path.join(folder, app_name_ext)):
+            return folder
+    raise "Not found"
