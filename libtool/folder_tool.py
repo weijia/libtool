@@ -11,21 +11,24 @@ def find_root_path(file_path, root_folder_name):
     folder_name = None
     while folder_name != root_folder_name:
         folder_name = os.path.basename(file_path)
-        #log.error("find_root_path:"+folder_name)
+        # log.error("find_root_path:"+folder_name)
         last_file_path = file_path
         file_path = os.path.dirname(file_path)
         if last_file_path == file_path:
-            print "find root path failed, last_file_path: %s, file_path: %s, folder_name: %s, root_folder_name: %s" % (last_file_path,
-                                file_path, folder_name, root_folder_name)
+            print "find root path failed, last_file_path: %s, file_path: %s, folder_name: %s, root_folder_name: %s" % (
+            last_file_path,
+            file_path, folder_name, root_folder_name)
             raise "No root path found"
     found_path = os.path.join(file_path, root_folder_name)
-    #log.error("returning:"+found_path)
+    # log.error("returning:"+found_path)
     return os.path.abspath(found_path)
 
 
 def find_root(root_name, caller_level=1):
     """
     This will not work in frozen app, as the get_parent_frame is getting the absolute path of the file when frozen
+    :param caller_level:
+    :param root_name:
     """
     frame = inspect.getouterframes(inspect.currentframe())
     caller_frame = frame[caller_level]
@@ -41,6 +44,7 @@ def get_file_folder(file_path):
 def get_absolute_path_for_relative_path(relative_path):
     """
     This will not work in frozen app, as the get_parent_frame is getting the absolute path of the file when frozen
+    :param relative_path:
     """
     caller_file = get_parent_frame_file()
     if (caller_file[-1] == "/") or (caller_file[-1] == "\\"):

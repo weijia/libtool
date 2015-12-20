@@ -21,26 +21,26 @@ def quote_unicode(unicode_str):
     if unicode != type(unicode_str):
         raise "Only support unicode string"
     res = urllib2.quote(unicode_str.encode('utf8'))
-    #cl("input:", unicode_str, "output:", res)
+    # cl("input:", unicode_str, "output:", res)
     return res
 
 
 def unquote_unicode(quoted_str):
-    #cl(urllib2.unquote(quoted_str))
-    #cl("input:", quoted_str)
-    #We must encode the quoted_str to utf8 so urllib2.unquote will return utf8. Otherwise, it will return
-    #unicode and unicode can not be decoded as utf8.
+    # cl(urllib2.unquote(quoted_str))
+    # cl("input:", quoted_str)
+    # We must encode the quoted_str to utf8 so urllib2.unquote will return utf8. Otherwise, it will return
+    # unicode and unicode can not be decoded as utf8.
     if unicode == type(quoted_str):
         quoted_str = quoted_str.encode('utf8')
     result = urllib2.unquote(quoted_str)
-    #cl(type(result))
-    #cl(result.encode('gbk'))
+    # cl(type(result))
+    # cl(result.encode('gbk'))
     result = result.decode('utf8')
-    #cl("output:", result)
+    # cl("output:", result)
     return result
 
 
-def splitWithChars(s, separatorList):
+def split_with_chars(s, separatorList):
     '''
     Separate string with multiple chars, such as ",\r\n\t" etc
     '''
@@ -78,8 +78,8 @@ def decodeChar(matchobj):
 
 
 def l(s):
-    #print >>sys.stderr, s
-    #print s
+    # print >>sys.stderr, s
+    # print s
     pass
 
 
@@ -109,17 +109,17 @@ class specialEncoding:
         s = s.replace(self.escapeChar, self.escapeChar + self.escapeChar)
         cnt = 0
         for i in self.removingChars:
-            #print s
+            # print s
             s = s.replace(i, self.escapeChar + u'0' * (self.escapeCharNumLen - len(str(cnt))) + unicode(str(cnt)))
-            #print 'after replace:%s, %s'%(i, s)
+            # print 'after replace:%s, %s'%(i, s)
             cnt += 1
         return s
 
     def de(self, s):
         if type(s) != unicode:
             raise nonUnicodeError
-            #s = re.sub("\\[0-9]+", decodeChar, s)
-        state = 0#0: normal, 1: one escapeChar received, 2: number received
+            # s = re.sub("\\[0-9]+", decodeChar, s)
+        state = 0  # 0: normal, 1: one escapeChar received, 2: number received
         r = u""
         num = u""
         for i in s:
@@ -147,13 +147,13 @@ class specialEncoding:
                         num = u""
                         state = 0
 
-
-        #print >>sys.stderr, s
-        #s = s.replace(self.escapeChar+self.escapeChar, self.escapeChar)
+        # print >>sys.stderr, s
+        # s = s.replace(self.escapeChar+self.escapeChar, self.escapeChar)
         return r
 
-#Jquery does not support ":","\"?
-#Python 2.7 does not support param with '/'
+
+# Jquery does not support ":","\"?
+# Python 2.7 does not support param with '/'
 gEscaping = [u":", u"/"]
 
 '''
@@ -180,14 +180,14 @@ def jsIdEncoding(s):
 
 def jsIdDecoding(s):
     e = specialEncoding(gEscaping, u"_")
-    #print e.de(s)
+    # print e.de(s)
     return e.de(s)
 
 
 if __name__ == '__main__':
     v = u"hello\rgoodmorning\thi,,"
-    #print 'separating:', v
-    print splitWithChars(v, u"\r\t\n,")
+    # print 'separating:', v
+    print split_with_chars(v, u"\r\t\n,")
     v = u"go\\\\od:ba/d"
     s = specialEncoding([u":", u"/"], u"\\")
     print v
@@ -204,9 +204,9 @@ if __name__ == '__main__':
     print '--------------------------------'
     print jsIdDecoding(u"ufsFs\\0//q19420-01/D\\0/")
 
-    #encoded_str = quote_unicode(u"中文")
-    #res = unquote_unicode('system_rest/%3Ffull_path%3DE%3A%5C%E5%BF%AB%E7%9B%98')
+    # encoded_str = quote_unicode(u"中文")
+    # res = unquote_unicode('system_rest/%3Ffull_path%3DE%3A%5C%E5%BF%AB%E7%9B%98')
     res = unquote_unicode('local_filesystem%3A//E%3A%5C%E5%BF%AB%E7%9B%98')
     print type(res)
-    #print os.path.exists(res.split('=')[1])
+    # print os.path.exists(res.split('=')[1])
     print os.path.exists(res.split('//')[1])
