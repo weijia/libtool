@@ -3,7 +3,6 @@ import time
 import random
 import re
 import logging
-
 # The following codes are copied from http://stackoverflow.com/questions/606561/how-to-get-filename-of-the-main-module-in-python
 import imp
 import sys
@@ -29,7 +28,7 @@ def get_main_exec_path():
 
 
 def get_main_file():
-    #print "----------------------", get_main_exec()
+    # print "----------------------", get_main_exec()
     # find path to where we are running
     return os.path.basename(get_main_exec()).split(".")[0]
 
@@ -38,7 +37,7 @@ def get_free_file_name(path, nameWithoutExt, ext):
     path_without_ext = os.path.join(path, nameWithoutExt)
     while os.path.exists(path_without_ext + ext):
         path_without_ext += '-' + str(random.randint(0, 10))
-        #print thumb_path_without_ext
+        # print thumb_path_without_ext
     return path_without_ext + ext
 
 
@@ -52,14 +51,14 @@ def get_free_name_from_full_path(full_path):
     path = os.path.dirname(full_path)
     ext = os.path.splitext(full_path)[1]
     basename = os.path.basename(full_path)
-    #print basename
+    # print basename
     name_without_ext = basename[0:-(len(ext))]
-    #print name_without_ext
+    # print name_without_ext
     if name_without_ext == '':
         name_without_ext = basename
         ext = ''
     res = get_free_file_name(path, name_without_ext, ext)
-    #print res
+    # print res
     return res
 
 
@@ -71,7 +70,7 @@ def get_free_timestamp_filename_in_path(path, dot_ext, prefix=''):
     :param prefix:
     :return:
     """
-    #print path, ext, prefix
+    # print path, ext, prefix
     filename = unicode(prefix + str(time.time()))
     return get_free_file_name(path, filename, dot_ext)
 
@@ -80,7 +79,7 @@ def find_file_in_product(filename):
     p = os.getcwd()
     for dirpath, dirnames, filenames in os.walk(p):
         if filename in filenames:
-            #print 'find file:', os.path.join(dirpath, filename)
+            # print 'find file:', os.path.join(dirpath, filename)
             return os.path.join(dirpath, filename)
     return None
 
@@ -91,17 +90,17 @@ def find_filename_in_app_framework_with_pattern(pattern):
     for dirpath, dirnames, filenames in os.walk(p):
         for i in filenames:
             res = re.search(pattern, i)
-            #print pattern, i
+            # print pattern, i
             if res is None:
                 continue
-                #print 'found item:', pattern, i
+                # print 'found item:', pattern, i
             return os.path.join(dirpath, i)
     print "path not found", pattern
     return None
 
 
 def find_callable_in_app_framework(filename):
-    #filename = filename.replace('-', '\-')
+    # filename = filename.replace('-', '\-')
     return find_filename_in_app_framework_with_pattern('^' + filename + "((\.bat$)|(\.py$)|(\.exe$)|(\.com$))")
 
 
@@ -111,18 +110,18 @@ log = logging.getLogger(__name__)
 def collect_files_in_dir(file_root_full_path, ext=None, ignore_file_list=[]):
     res = []
     if os.path.exists(file_root_full_path) and os.path.isdir(file_root_full_path):
-        #log.error(file_root_full_path)
+        # log.error(file_root_full_path)
         for filename in os.listdir(file_root_full_path):
-            #log.error(filename)
+            # log.error(filename)
             if filename in ignore_file_list:
-                #print "ignoring: ", filename
+                # print "ignoring: ", filename
                 continue
             if (ext is None) or (ext in filename):
-                #To ensure .pyc is not included
+                # To ensure .pyc is not included
                 if len(filename.split(ext)[1]) != 0:
                     continue
                 full_path = os.path.join(file_root_full_path, filename)
-                #print full_path
+                # print full_path
                 res.append(full_path)
     return res
 
@@ -138,7 +137,7 @@ def get_folder(file_path):
 
 
 def get_parent_folder(file_path):
-    #print "parent:"+os.path.abspath(os.path.join(os.path.dirname(file_path),".."))
+    # print "parent:"+os.path.abspath(os.path.join(os.path.dirname(file_path),".."))
     return os.path.abspath(os.path.join(os.path.dirname(file_path), ".."))
 
 
@@ -148,10 +147,10 @@ def get_sibling_folder(file_path, folder_name):
 
 def find_root_even_frozen(root_name):
     if main_is_frozen():
-        #log.error("frozen, "+find_root_path(sys.executable, root_name))
+        # log.error("frozen, "+find_root_path(sys.executable, root_name))
         return find_root_path(sys.executable, root_name)
     else:
-        #log.error(dir(sys))
+        # log.error(dir(sys))
         return find_root(root_name, 2)
 
 
@@ -168,36 +167,37 @@ def translate_local_string_to_unicode(original_str):
     return original_str
 
 
-def format_path(original_dir):
+def format_path(original_dir_str):
     """
     Transform dir to internal format.
     In windows, it will be like: D:/helloworld.txt
       The driver letter D should be capitalized. Separator should be '/' instead of '\\'
 
     The input should be unicode. Anyway, we'll check it in this function.
+    :param original_dir_str: the original folder str
 
     """
-    if original_dir is None:
+    if original_dir_str is None:
         raise "tried to transform None to standard path"
-    #if isUfsUrl(original_dir):
+    # if isUfsUrl(original_dir):
     #    raise "is ufs url, not path"
-    new_dir = translate_local_string_to_unicode(os.path.abspath(original_dir))
-    #print type(new_dir)
+    new_dir = translate_local_string_to_unicode(os.path.abspath(original_dir_str))
+    # print type(new_dir)
     if sys.platform == 'win32':
-        #In windows, make the driver letter upper case
+        # In windows, make the driver letter upper case
         if new_dir[1] == u':':
             new_dir = new_dir[0].upper() + new_dir[1:]
         else:
             logging.error('not a correct directory format in windows. Dir is:', new_dir)
     new_dir = new_dir.replace(u'\\', u'/')
-    #ncl(new_dir)
-    #TODO: support linux path?
-    #Remove trail '/'
-    #print new_dir
+    # ncl(new_dir)
+    # TODO: support linux path?
+    # Remove trail '/'
+    # print new_dir
     new_dir = new_dir.rstrip(u'/')
     if sys.platform == 'win32':
-        #In windows, make the driver letter upper case
+        # In windows, make the driver letter upper case
         if len(new_dir) == 2:
-            #C: or E:
+            # C: or E:
             new_dir += u"/"
     return unicode(new_dir)
