@@ -1,8 +1,11 @@
 # -*- coding: utf8 -*-
 import os
 import urllib2
+import sys
+import re
 
 
+# noinspection PyMethodMayBeStatic
 class SpecialEncoder(object):
     def encode(self, unicode_str):
         if unicode != type(unicode_str):
@@ -40,12 +43,12 @@ def unquote_unicode(quoted_str):
     return result
 
 
-def split_with_chars(s, separatorList):
-    '''
+def split_with_chars(s, separator_list):
+    """
     Separate string with multiple chars, such as ",\r\n\t" etc
-    '''
+    """
     r = [s]
-    for i in separatorList:
+    for i in separator_list:
         t = []
         for j in r:
             t.extend(j.split(i))
@@ -53,13 +56,12 @@ def split_with_chars(s, separatorList):
     return r
 
 
-class specialEncodingError: pass
+class SpecialEncodingError(Exception):
+    pass
 
 
-import re
-
-
-class nonUnicodeError: pass
+class NonUnicodeError(Exception):
+    pass
 
 
 '''
@@ -68,7 +70,6 @@ If there is a number that following the removing Char will cause problem if the 
 
 For exsample: ":" is the removing char, "\\" is the escapeChar, then ":12" will cause problem. Solution is to use fixed length of number for escaped char.
 '''
-import sys
 
 
 def decodeChar(matchobj):
@@ -83,29 +84,29 @@ def l(s):
     pass
 
 
-class specialEncoding:
+class SpecialEncoding:
     def __init__(self, removingChars, escapeChar):
         '''
         All removing chars should be unicode
         '''
         if type(removingChars) != list:
-            raise specialEncodingError
+            raise SpecialEncodingError
         for i in removingChars:
             if type(i) != unicode:
-                raise nonUnicodeError
+                raise NonUnicodeError
         if type(escapeChar) != unicode:
-            raise nonUnicodeError
+            raise NonUnicodeError
         self.removingChars = removingChars
         self.escapeChar = escapeChar
         self.escapeCharNumLen = (len(removingChars) / 20) + 1
 
     def en(self, s):
-        '''
+        """
         \\a->\\\\a
         b->\98#b's ascii is 98
-        '''
+        """
         if type(s) != unicode:
-            raise nonUnicodeError
+            raise NonUnicodeError
         s = s.replace(self.escapeChar, self.escapeChar + self.escapeChar)
         cnt = 0
         for i in self.removingChars:
@@ -117,7 +118,7 @@ class specialEncoding:
 
     def de(self, s):
         if type(s) != unicode:
-            raise nonUnicodeError
+            raise NonUnicodeError
             # s = re.sub("\\[0-9]+", decodeChar, s)
         state = 0  # 0: normal, 1: one escapeChar received, 2: number received
         r = u""
@@ -174,12 +175,12 @@ def jsIdEncoding(s):
     """
     This function is used to encode the item id of jstree as jstree can not manipulate id with ":" correctly
     """
-    e = specialEncoding(gEscaping, u"_")
+    e = SpecialEncoding(gEscaping, u"_")
     return e.en(s)
 
 
 def jsIdDecoding(s):
-    e = specialEncoding(gEscaping, u"_")
+    e = SpecialEncoding(gEscaping, u"_")
     # print e.de(s)
     return e.de(s)
 
@@ -189,13 +190,13 @@ if __name__ == '__main__':
     # print 'separating:', v
     print split_with_chars(v, u"\r\t\n,")
     v = u"go\\\\od:ba/d"
-    s = specialEncoding([u":", u"/"], u"\\")
+    s = SpecialEncoding([u":", u"/"], u"\\")
     print v
     print s.en(v)
     print s.de(v)
     v = u"D:/"
     print '---------------------------------'
-    s = specialEncoding([u":", u"/"], u"\\")
+    s = SpecialEncoding([u":", u"/"], u"\\")
     print v
     print s.en(v)
     print s.de(v)
@@ -210,3 +211,8 @@ if __name__ == '__main__':
     print type(res)
     # print os.path.exists(res.split('=')[1])
     print os.path.exists(res.split('//')[1])
+
+
+def convert(name):
+    s1 = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
+    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', s1).lower()
