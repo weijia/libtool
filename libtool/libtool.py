@@ -4,12 +4,10 @@ import sys
 import os
 import inspect
 import logging
-
 from filetools import get_sibling_folder
 from inspect_utils import get_parent_frame_file
 from folder_tool import find_root_path, get_file_folder
 from basic_lib_tool import include, append, include_in_folder
-
 
 log = logging.getLogger(__name__)
 
@@ -47,8 +45,8 @@ def exclude(folder):
 
 
 def get_parent_of_folder_containing_file(file_path):
-    #print "parent:"+os.path.abspath(os.path.join(os.path.dirname(file_path),".."))
-    return os.path.abspath(os.path.join(os.path.dirname(file_path),".."))
+    # print "parent:"+os.path.abspath(os.path.join(os.path.dirname(file_path),".."))
+    return os.path.abspath(os.path.join(os.path.dirname(file_path), ".."))
 
 
 def include_all_direct_subfolders(folder_path):
@@ -98,8 +96,8 @@ def include_file_sibling_folder_ex(sub_folder_name):
         caller_file = caller_file[0:-1]
     folder = get_file_folder(caller_file)
     include_in_folder(folder, sub_folder_name)
-    
-    
+
+
 def include_sibling_file(file_path, filename):
     if (file_path[-1] == "/") or (file_path[-1] == "\\"):
         file_path = file_path[0:-1]
@@ -107,6 +105,7 @@ def include_sibling_file(file_path, filename):
     include(os.path.join(folder, filename))
 
 
+# noinspection SpellCheckingInspection
 def add_path_to_python_path_env(full_path):
     full_path = full_path.replace("\\", "/")
     original = os.environ.get("PYTHONPATH", "")
